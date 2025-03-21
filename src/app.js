@@ -2,24 +2,22 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
-const { adminAuth , userAuth } = require("./middlewares/auth");
-
-//handle auth middleware for all auth request
-
-app.use("/admin", adminAuth);
-
-app.get("/admin/getAllData", userAuth ,(req, res) => {
-    res.send("user get all data"); 
+app.get("/getUserData", (req, res) => {
+  try{
+    throw new Error("New error occurred");
+    res.send("user data is not available");
+  }
+  catch(err){
+    res.status(500).send("something went wrong");
+  }
 });
 
 
-app.get("/admin/deleteUser", (req, res) => {
-  res.send("Deleted user");
-});
-
-app.get("/", (req, res) => {
-  res.send("Deleted a user");
-});
+// app.use("/", (err, req, res, next) => {
+//   if (err) {
+//     res.status(500).send("Something went wrong");
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
