@@ -2,30 +2,25 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
-// Middleware to parse JSON request bodies
+const { adminAuth , userAuth } = require("./middlewares/auth");
 
-// Get /user ==>IT checks  all the app.xxx("matching requests") functions
+//handle auth middleware for all auth request
 
-app.use("/" ,(req,res,next) => {
-    console.log("zero handler");
-    next();
+app.use("/admin", adminAuth);
+
+app.get("/admin/getAllData", userAuth ,(req, res) => {
+    res.send("user get all data"); 
 });
 
-app.get(
-  "/user",
-  (req, res, next) => {
-    console.log("handle 1st route handlers");
-    next();
-  },
-  (req, res, next) => {
-    console.log("handle 2nd route handlers");
-    next();
-  },
-  (req, res, next) => {
-    console.log("3rd route handlers ");
-    res.send("hello");
-  }
-);
+
+app.get("/admin/deleteUser", (req, res) => {
+  res.send("Deleted user");
+});
+
+app.get("/", (req, res) => {
+  res.send("Deleted a user");
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
