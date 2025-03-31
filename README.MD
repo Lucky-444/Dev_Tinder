@@ -231,5 +231,116 @@ How express Js basically handlers requests behind the scenes
 
 write a middleware auth for getalldata
 write a middleware auth for deletealldata
+////////////////////////////////////////////////////////////////
+
+//get the single user by find email
+app.get("/user", async (req, res) => {
+  const email = req.body.email;
+  try {
+    const user = await User.findOne({ email: email });
+    // if (user.length === 0) {
+    //   res.status(404).send("user not found");
+    //   return;
+    // } else {
+    //   console.log("User Data:", req.body);
+    //   res.send(user);
+    // }
+    res.send(user);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+//get all users
+app.get("/feed", async (req, res) => {
+  // TODO: Implement logic to fetch all users
+  try {
+    const users = await User.find({});
+    console.log(req.body);
+    res.send(users);
+  } catch (error) {
+    console.error("Feed Error:", error);
+    res.status(500).send({ error: error.message || "Error fetching users" });
+  }
+});
+
+app.delete("/delete", async (req, res) => {
+  const userId = req.body._id;
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      res.status(404).send("User not found");
+      return;
+    }
+    res.send("users deleted successfully");
+    console.log(req.body);
+  } catch (err) {
+    console.log("somethig went wrong");
+    res.status(500).send({ error: error.message || "Error deleting user" });
+  }
+});
+
+//update data of  a user
+
+app.patch("/update/:userID", async (req, res) => {
+  const userId = req.params?.userID;
+  const updatedData = req.body;
+
+  try {
+    // Check if user exists
+    const ALLOWED_UPADATES = ["photoUrl", "about", "gender", "age", "skills"];
+    //api level  checking
+    const isValidUpdate = Object.keys(updatedData).every((key) =>
+      ALLOWED_UPADATES.includes(key)
+    );
+
+    if (!isValidUpdate) {
+      res.status(400).send({
+        error:
+          "Invalid update. Only allowed updates are photoUrl, about, gender, age, skills",
+      });
+      return; // return to avoid further processing
+    }
+
+    if (updatedData.skills.length > 10) {
+      throw new Error("skills can not be more than 10");
+    }
+
+    const user = await User.findByIdAndUpdate({ _id: userId }, updatedData, {
+      new: true,
+    });
+    if (!user) {
+      res.status(404).send("User not found");
+      return;
+    }
+    res.send(user);
+    console.log(req.body);
+  } catch (error) {
+    console.error("Update Error:", error);
+    res.status(500).send({ error: error.message || "Error updating user" });
+  }
+});
+
+//update by email id
+app.put("/updated", async (req, res) => {
+  const email = req.body.email;
+  const updatedData = req.body;
+  try {
+    const user = await User.findOneAndUpdate({ email: email }, updatedData, {
+      new: true,
+      runValidators: true,
+    });
+    if (!user) {
+      res.status(404).send("User not found");
+      return;
+    }
+    res.send(user);
+    console.log(req.body);
+  } catch (err) {
+    console.error(err.message);
+    console.log("something is worng");
+    res.status(500).send({ error: error.message || "Error updating user" });
+  }
+});
 
 
