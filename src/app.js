@@ -64,13 +64,12 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("email id is notvalid");
     }
-    const passwordHash = user.password;
-    const isPasswordValid = await bcrypt.compare(password, passwordHash);
+    const isPasswordValid = await user.validatePassword(password);
 
     if (isPasswordValid) {
       //jwt & cookies
       //Create a JWT token
-      const token = jwt.sign({ _id: user._id }, "DEV@tinder790",{expiresIn:"1d"});
+      const token = await user.getJWT();
      
 
       //add the token to the cookie and send response back to the user
