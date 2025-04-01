@@ -41,12 +41,16 @@ const userSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    //by default this validation is called when a new document is created a new object if You try to update then it should be not   work 
-    validate(value){
-      if(!["male", "female" ,"others"].includes(value)){
-        throw new Error("IT is not a valid");
-      }
+    enum: {
+      values :["male", "female","others"],
+      message: "{VALUE} is not a valid gender."
     }
+    //by default this validation is called when a new document is created a new object if You try to update then it should be not   work 
+    // validate(value){
+    //   if(!["male", "female" ,"others"].includes(value)){
+    //     throw new Error("IT is not a valid");
+    //   }
+    // }
   },
   photoUrl: {
     type: String,
