@@ -28,8 +28,8 @@ requestsRouter.post(
       }
 
       //there is arrive a new condition IS The Same User Send a new request to HimSelf Again
-      //you Can Also do A schema validation or write a logic for that condition 
-      // There  is a schema validation : schema Pre method just GOOGLE it and Read it Thoroughly 
+      //you Can Also do A schema validation or write a logic for that condition
+      // There  is a schema validation : schema Pre method just GOOGLE it and Read it Thoroughly
       // and also you can write a logic for this condition in your schema validation or middleware
       //this Schema Pre is called as a middleware (work as like a Middleware)
 
@@ -81,7 +81,8 @@ requestsRouter.post(
       const data = await connectionRequest.save();
 
       res.json({
-        message: req.user.firstName + " is " +status+ " in " +toUser.firstName,
+        message:
+          req.user.firstName + " is " + status + " in " + toUser.firstName,
         data: data,
       });
     } catch (err) {
@@ -89,5 +90,42 @@ requestsRouter.post(
     }
   }
 );
+
+requestsRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
+
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ messaage: "Status not allowed!" });
+      }
+
+      const connectionRequest = await ConnectionRequestModel.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+      if (!connectionRequest) {
+        return res
+          .status(404)
+          .json({ message: "Connection request not found" });
+      }
+
+      connectionRequest.status = status;
+
+      const data = await connectionRequest.save();
+
+      res.json({ message: "Connection request " + status, data });
+    } catch (err) {
+      res.status(400).send("ERROR: " + err.message);
+    }
+  }
+);
+
+
 
 module.exports = requestsRouter;

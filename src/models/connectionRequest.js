@@ -7,12 +7,12 @@ const connectionRequestSchema = new mongoose.Schema(
   {
     fromUserId: {
       type: mongoose.Schema.Types.ObjectId,
-     
+      ref: "User",// This is Reference to the User Schema Database 
       required: true,
     },
     toUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      
+      ref: "User",// This is Reference to the User Schema Database  
       required: true,
     },
     status: {
