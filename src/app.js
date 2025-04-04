@@ -9,8 +9,18 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestsRouter = require("./routes/requests"); 
 const userRouter = require("./routes/user");
+const cors = require("cors");
 
-
+app.use(cors({
+  origin : "http://localhost:5173", // this is damain of our frontend server 
+  // they told you from Where your frontend is HOsted
+  //and set cookie domain in cookie section 
+  // now credentials ==> http or https are work
+  //we are white lising the credentials and origin
+  
+  credentials : true,
+  allowedHeaders : ['Content-Type', 'Authorization']
+}));
 app.use(cookieParser());
 app.use(express.json()); // This enables JSON parsing for incoming requests
 

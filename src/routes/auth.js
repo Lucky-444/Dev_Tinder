@@ -67,11 +67,13 @@ authRouter.post("/login", async (req, res) => {
   
         res.cookie("token", token);
   
-        res.send("Login Successful");
+        res.send(user);
       } else {
+        
         throw new Error("Invalid password");
       }
     } catch (err) {
+      console.error(err.message);
       res.status(500).send("error" + err.message);
     }
   }); 

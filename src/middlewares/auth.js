@@ -7,11 +7,11 @@ const userAuth = async (req, res, next) => {
     const cookies = req.cookies;
     const { token } = cookies;
     if (!token) {
-      throw new  Error("No token provided, authorization denied");
+    return  res.status(401).send({ message: "please Login" });
     }
 
 
-    const decodedObj = await jwt.verify(token, "DEV@tinder790");
+    const decodedObj =   jwt.verify(token, "DEV@tinder790");
 
     const { _id } = decodedObj;
 
