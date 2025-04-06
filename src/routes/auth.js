@@ -38,10 +38,20 @@ authRouter.post("/signup", async (req, res) => {
         skills,
         // additional fields...
       });
-      await userObj.save();
-      console.log("User Data:", req.body);
-      res.status(201).send({ message: "User successfully added" });
-    } catch (error) {
+
+
+      const savedUser  = await userObj.save();
+      const token = await savedUser.getJWT();
+
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+        httpOnly: true,
+      });
+      
+      res.status(201).json({ message: "User successfully added" ,data : savedUser });
+    } 
+    
+    catch (error) {
       console.error("Signup Error:", error);
       res.status(400).send({ error: error.message || "Error saving user" });
     }

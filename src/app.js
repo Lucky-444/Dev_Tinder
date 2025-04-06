@@ -19,7 +19,7 @@ app.use(cors({
   //we are white lising the credentials and origin
   
   credentials : true,
-  allowedHeaders : ['Content-Type', 'Authorization']
+  // allowedHeaders : ['Content-Type', 'Authorization']
 }));
 app.use(cookieParser());
 app.use(express.json()); // This enables JSON parsing for incoming requests
