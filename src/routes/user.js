@@ -27,7 +27,14 @@ userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
     const connectionRequest = await ConnectionRequestModel.find({
       toUserId: loggedInUser._id,
       status: "interested",
-    }).populate("fromUserId", ["firstName", "lastName"]);
+    }).populate("fromUserId", [
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "photoUrl",
+      "about",
+    ]);
 
     res.json({
       message: "Connection request fetched successfully",
@@ -83,7 +90,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 10;
-    limit = limit > 50 ? 50 : limit
+    limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
     //if you send a connection request to him or reject the user then  you can not Seen  their Profile again again
@@ -119,8 +126,6 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 
     const loggedInUser = req.user;
 
-
-
     // find out all The Connections Request that either send or receives
     const connectionRequest = await ConnectionRequestModel.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
@@ -133,29 +138,28 @@ userRouter.get("/feed", userAuth, async (req, res) => {
       hideUserFromFeed.add(req.toUserId.toString());
     });
 
-    const user =await User.find({
+    const user = await User.find({
       $and: [
         { _id: { $nin: Array.from(hideUserFromFeed) } }, // exclude the users whose id are in hideUserFromFeed
         { _id: { $ne: loggedInUser._id } }, // exclude the logged in user
       ],
-    }).select(USER_SAFE_DATA).skip(skip).limit(limit);
+    })
+      .select(USER_SAFE_DATA)
+      .skip(skip)
+      .limit(limit);
 
-     /// now there is arrive another edge case 
-     // we didn't send at a time all user 
-     // let us assume there total 999 user in your db
-     // now a new user signup and logged in 
-     // then we didn't show all 999 users to the new user at a time
-     // this makes your application slow down
-     // we want to show small chunk chunks part of the 999 user(like 10 divisior);
-     //this is called pagination
+    /// now there is arrive another edge case
+    // we didn't send at a time all user
+    // let us assume there total 999 user in your db
+    // now a new user signup and logged in
+    // then we didn't show all 999 users to the new user at a time
+    // this makes your application slow down
+    // we want to show small chunk chunks part of the 999 user(like 10 divisior);
+    //this is called pagination
 
-     //jsut read about .skip() , and .limit();
+    //jsut read about .skip() , and .limit();
 
-
-
-
-
-    res.json({data : user}); 
+    res.json({ data: user });
   } catch (err) {
     res.status(400).send("ERROR : " + err.message);
   }
